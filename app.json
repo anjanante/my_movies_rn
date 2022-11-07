@@ -1,0 +1,11 @@
+{
+  "expo": {
+    "name": "my_movies_rn_tmp",
+    "slug": "my_movies_rn_tmp",
+    "version": "1.0.0",
+    "assetBundlePatterns": [
+      "**/*"
+    ]
+  },
+  "name": "my_movies_rn_tmp"
+}
