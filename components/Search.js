@@ -1,6 +1,7 @@
 // Components/Search.js
 import React from 'react'
-import { StyleSheet, View, TextInput, Button } from 'react-native'
+import { StyleSheet, View, TextInput, Button, Text,FlatList } from 'react-native'
+import {data} from '../Helpers/filmsData'
 
 export default class Search extends React.Component {
     render() {
@@ -8,6 +9,11 @@ export default class Search extends React.Component {
             <View style={styles.main_container}>
                 <TextInput style={styles.textinput} placeholder='Title of the movie' />
                 <Button title='Search' onPress={() => { }} />
+                <FlatList
+                    data={data}
+                    renderItem={({item}) => <Text>{item.name}</Text>}
+                    keyExtractor={item => item.name}
+                />
             </View>
         )
     }
