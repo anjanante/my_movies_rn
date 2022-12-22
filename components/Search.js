@@ -31,7 +31,7 @@ export default class Search extends React.Component {
         console.log('RENDER');
         return (
             <View style={styles.main_container}>
-                <TextInput onChangeText={(text) => this._searchTextInputchanged(text)} style={styles.textinput} placeholder='Title of the movie' />
+                <TextInput onChangeText={(text) => this._searchTextInputchanged(text)} onSubmitEditing={() => this._loadFilms()} style={styles.textinput} placeholder='Title of the movie' />
                 <Button title='Search' onPress={() => this._loadFilms() } />
                 <FlatList
                     data={this.state.films}
