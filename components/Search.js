@@ -1,6 +1,6 @@
 // Components/Search.js
 import React from 'react'
-import { StyleSheet, View, TextInput, Button, Text,FlatList } from 'react-native'
+import { StyleSheet, View, TextInput, Button, Text,FlatList, ActivityIndicator } from 'react-native'
 import {data} from '../Helpers/filmsData'
 import FilmItem from './FilmItem'
 import { getFilmsFromtext } from '../API/TMDBApi'
@@ -10,16 +10,31 @@ export default class Search extends React.Component {
         super(props);
         this.state = {
             films: [],
+            isLoading: false,
         }
         this.searchedText=''
     }
     _loadFilms(){
+        this.setState({isLoading:true});
         if(this.searchedText.length>0){
             getFilmsFromtext(this.searchedText)
             .then(res => {
                 console.log(res);
-                this.setState({films: res.results})
+                this.setState({
+                    films: res.results,
+                    isLoading: false,
+                })
             })
+        }
+    }
+
+    _displayLoading(){
+        if(this.state.isLoading){
+            return (
+                <View style={styles.loading_container}>
+                    <ActivityIndicator size='large' />
+                </View>
+            )
         }
     }
 
@@ -38,6 +53,7 @@ export default class Search extends React.Component {
                     renderItem={({item}) => <FilmItem data={item} />}
                     keyExtractor={item => item.id.toString()}
                 />
+                {this._displayLoading()}
             </View>
         )
     }
@@ -57,5 +73,14 @@ const styles = StyleSheet.create({
       borderColor: '#000000',
       borderWidth: 1,
       paddingLeft: 5
-    }
+    },
+    loading_container: {
+        position: 'absolute',
+        left: 0,
+        right: 0,
+        top: 100,
+        bottom: 0,
+        alignItems: 'center',
+        justifyContent: 'center'
+      }
 })
