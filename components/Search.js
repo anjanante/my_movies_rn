@@ -15,15 +15,17 @@ export default class Search extends React.Component {
         this.searchedText=''
     }
     _loadFilms(){
-        this.setState({isLoading:true});
         if(this.searchedText.length>0){
+            this.setState({isLoading:true})
             getFilmsFromtext(this.searchedText)
             .then(res => {
-                console.log(res);
+                console.log(res)
                 this.setState({
                     films: res.results,
                     isLoading: false,
                 })
+            }).catch((error) => {
+                console.log(error)
             })
         }
     }
@@ -52,6 +54,10 @@ export default class Search extends React.Component {
                     data={this.state.films}
                     renderItem={({item}) => <FilmItem data={item} />}
                     keyExtractor={item => item.id.toString()}
+                    onEndReachedThreshold={0.5}
+                    onEndReached={() => {
+                        console.log('END REACHED');
+                    }}
                 />
                 {this._displayLoading()}
             </View>
