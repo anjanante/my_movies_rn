@@ -1,6 +1,6 @@
-import { ActivityIndicator, ScrollView, StyleSheet, Text, View } from "react-native";
+import { ActivityIndicator, Image, ScrollView, StyleSheet, Text, View } from "react-native";
 import React from 'react';
-import { getFilmDetailFromApi } from "../API/TMDBApi";
+import { getFilmDetailFromApi, getImageFromApi } from "../API/TMDBApi";
 import moment from 'moment';
 import numeral from 'numeral';
 
