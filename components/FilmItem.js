@@ -5,8 +5,6 @@ import { StyleSheet, View, Text,Image  } from 'react-native'
 import { getImageFromApi } from '../API/TMDBApi'
 
 class FilmItem extends React.Component {
-
-    
   render() {
     const film = this.props.data;
     return (
