@@ -1,6 +1,7 @@
 import { createAppContainer } from 'react-navigation';
 import { createStackNavigator } from 'react-navigation-stack';
 import Search from '../components/Search';
+import FilmDetail from '../components/FilmDetail';
 
 const SearchStackNavigator = createStackNavigator({
     Search:{
@@ -8,6 +9,9 @@ const SearchStackNavigator = createStackNavigator({
         navigationOptions:{
             titme: "Search"
         }
+    },
+    FilmDetail:{
+        screen:FilmDetail
     }
 });
 
