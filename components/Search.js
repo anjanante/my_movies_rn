@@ -61,7 +61,6 @@ export default class Search extends React.Component {
     }
 
     render() {
-        console.log('RENDER');
         return (
             <View style={styles.main_container}>
                 <TextInput onChangeText={(text) => this._searchTextInputchanged(text)} onSubmitEditing={() => this._searchFilms()} style={styles.textinput} placeholder='Title of the movie' />
