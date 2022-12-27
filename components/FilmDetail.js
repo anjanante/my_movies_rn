@@ -3,8 +3,9 @@ import React from 'react';
 import { getFilmDetailFromApi, getImageFromApi } from "../API/TMDBApi";
 import moment from 'moment';
 import numeral from 'numeral';
+import { connect } from "react-redux";
 
-export default class FilmDetail extends React.Component {
+class FilmDetail extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -72,6 +73,7 @@ export default class FilmDetail extends React.Component {
 
     render() {
         console.log('RENDER');
+        console.log(this.props);
         const idFilm = this.props.navigation.state.params.idFilm;
         return (
             <View>
@@ -125,4 +127,11 @@ const styles = StyleSheet.create({
       marginRight: 5,
       marginTop: 5,
     }
-  })
+  });
+
+  const mapStateToProps = (state) => {
+    return {
+        favoriteFilma: state.favoritesFilm
+    }
+}
+  export default connect(mapStateToProps)(FilmDetail)
