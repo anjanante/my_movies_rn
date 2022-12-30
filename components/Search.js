@@ -4,8 +4,9 @@ import { StyleSheet, View, TextInput, Button, Text, FlatList, ActivityIndicator 
 // import { data } from '../Helpers/filmsData'
 import FilmItem from './FilmItem'
 import { getFilmsFromtext } from '../API/TMDBApi'
+import { connect } from "react-redux";
 
-export default class Search extends React.Component {
+class Search extends React.Component {
     constructor(props) {
         super(props);
         this.page = 0
@@ -57,7 +58,11 @@ export default class Search extends React.Component {
     }
 
     _displayDetailForFilm = (id) => {
-        this.props.navigation.navigate("FilmDetail", {idFilm:id});
+        this.props.navigation.navigate("FilmDetail", { idFilm: id });
+    }
+
+    componentDidUpdate() {
+        console.log(this.props.favoriteFilm);
     }
 
     render() {
@@ -67,7 +72,13 @@ export default class Search extends React.Component {
                 <Button title='Search' onPress={() => this._searchFilms()} />
                 <FlatList
                     data={this.state.films}
-                    renderItem={({ item }) => <FilmItem film={item} displayDetailForFilm={this._displayDetailForFilm} />}
+                    // extraData={this.props.favoriteFilm} //with or not, is the same on v17
+                    renderItem={({ item }) =>
+                        <FilmItem
+                            film={item}
+                            isFilmFavorite={(this.props.favoriteFilm.findIndex(film => film.id === item.id) !== -1) ? true : false}
+                            displayDetailForFilm={this._displayDetailForFilm}
+                        />}
                     keyExtractor={item => item.id.toString()}
                     onEndReachedThreshold={0.2}
                     onEndReached={() => {
@@ -106,3 +117,10 @@ const styles = StyleSheet.create({
         justifyContent: 'center'
     }
 })
+
+const mapStateToProps = (state) => {
+    return {
+        favoriteFilm: state.favoritesFilm
+    }
+}
+export default connect(mapStateToProps)(Search)

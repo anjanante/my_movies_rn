@@ -93,10 +93,6 @@ class FilmDetail extends React.Component {
         this._loadDetailFilms(this.props.navigation.state.params.idFilm);
     }
 
-    componentDidUpdate() {
-        console.log(this.props.favoriteFilm);
-    }
-
     render() {
         const idFilm = this.props.navigation.state.params.idFilm;
         return (
