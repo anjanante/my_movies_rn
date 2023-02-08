@@ -33,12 +33,7 @@ class FilmList extends React.Component {
                 keyExtractor={item => item.id.toString()}
                 onEndReachedThreshold={0.5}
                 onEndReached={() => {
-                    console.log("Tratra ftsn");
-                    console.log(this.props.page);
-                    console.log(this.props.totalPage);
-
                     if (this.props.page < this.props.totalPage) {
-                        console.log("Tratra le pejy");
                         this.props.loadFilms()
                     }
                 }}

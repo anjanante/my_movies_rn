@@ -23,8 +23,6 @@ class Search extends React.Component {
             this.setState({ isLoading: true })
             getFilmsFromtext(this.searchedText, this.page + 1)
                 .then(res => {
-                    console.log('_loadFilms')
-                    console.log(res)
                     this.page = res.page;
                     this.totalPage = res.total_pages;
                     this.setState({
@@ -59,12 +57,8 @@ class Search extends React.Component {
         }, () => this._loadFilms())
     }
 
-    _displayDetailForFilm = (id) => {
-        this.props.navigation.navigate("FilmDetail", { idFilm: id });
-    }
-
     componentDidUpdate() {
-        console.log(this.props.favoriteFilm);
+        // console.log(this.props.favoriteFilm);
     }
 
     render() {
