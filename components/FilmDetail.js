@@ -18,7 +18,6 @@ class FilmDetail extends React.Component {
     _loadDetailFilms(idFilm) {
         getFilmDetailFromApi(idFilm)
             .then(res => {
-                console.log(res);
                 this.setState({
                     film: res,
                     isLoading: false

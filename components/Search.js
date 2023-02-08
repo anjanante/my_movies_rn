@@ -5,6 +5,7 @@ import { StyleSheet, View, TextInput, Button, Text, FlatList, ActivityIndicator 
 import FilmItem from './FilmItem'
 import { getFilmsFromtext } from '../API/TMDBApi'
 import { connect } from "react-redux";
+import FilmList from './FilmList';
 
 class Search extends React.Component {
     constructor(props) {
@@ -17,12 +18,11 @@ class Search extends React.Component {
         }
         this.searchedText = ''
     }
-    _loadFilms() {
+    _loadFilms = () => {
         if (this.searchedText.length > 0) {
             this.setState({ isLoading: true })
             getFilmsFromtext(this.searchedText, this.page + 1)
                 .then(res => {
-                    console.log(res)
                     this.page = res.page;
                     this.totalPage = res.total_pages;
                     this.setState({
@@ -57,12 +57,8 @@ class Search extends React.Component {
         }, () => this._loadFilms())
     }
 
-    _displayDetailForFilm = (id) => {
-        this.props.navigation.navigate("FilmDetail", { idFilm: id });
-    }
-
     componentDidUpdate() {
-        console.log(this.props.favoriteFilm);
+        // console.log(this.props.favoriteFilm);
     }
 
     render() {
@@ -70,22 +66,12 @@ class Search extends React.Component {
             <View style={styles.main_container}>
                 <TextInput onChangeText={(text) => this._searchTextInputchanged(text)} onSubmitEditing={() => this._searchFilms()} style={styles.textinput} placeholder='Title of the movie' />
                 <Button title='Search' onPress={() => this._searchFilms()} />
-                <FlatList
-                    data={this.state.films}
-                    // extraData={this.props.favoriteFilm} //with or not, is the same on v17
-                    renderItem={({ item }) =>
-                        <FilmItem
-                            film={item}
-                            isFilmFavorite={(this.props.favoriteFilm.findIndex(film => film.id === item.id) !== -1) ? true : false}
-                            displayDetailForFilm={this._displayDetailForFilm}
-                        />}
-                    keyExtractor={item => item.id.toString()}
-                    onEndReachedThreshold={0.2}
-                    onEndReached={() => {
-                        if (this.page < this.totalPage) {
-                            this._loadFilms()
-                        }
-                    }}
+                <FilmList 
+                    films={this.state.films}
+                    navigation={this.props.navigation}
+                    loadFilms={this._loadFilms}
+                    page={this.page}
+                    totalPage={this.totalPage}
                 />
                 {this._displayLoading()}
             </View>
