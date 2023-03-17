@@ -4,6 +4,7 @@ import { getFilmDetailFromApi, getImageFromApi } from "../API/TMDBApi";
 import moment from 'moment';
 import numeral from 'numeral';
 import { connect } from "react-redux";
+import EnlargeShrink from "../Animations/EnlargeShrink";
 
 class FilmDetail extends React.Component {
     constructor(props) {
@@ -18,8 +19,8 @@ class FilmDetail extends React.Component {
     static navigationOptions = ({ navigation }) => {
         const { params } = navigation.state
         // On accède à la fonction shareFilm et au film via les paramètres qu'on a ajouté à la navigation
-        // if (params.film != undefined && Platform.OS === 'web') {
-        if (params.film != undefined && Platform.OS === 'ios') {
+        if (params.film != undefined && Platform.OS === 'web') {
+        // if (params.film != undefined && Platform.OS === 'ios') {
             return {
                 // On a besoin d'afficher une image, il faut donc passe par une Touchable une fois de plus
                 headerRight: () => <TouchableOpacity
@@ -57,22 +58,26 @@ class FilmDetail extends React.Component {
 
     _displayFavoriteImage() {
         var sourceImage = require('../Images/ic_favorite_border.png');
+        var shouldEnlarge = false;
         // console.log('_displayFavoriteImage');
         if (this.props.favoriteFilm.findIndex(item => item.id === this.state.film.id) !== -1) {
             sourceImage = require('../Images/ic_favorite.png');
+            shouldEnlarge = true;
         }
+
         return (
-            <Image
-                source={sourceImage}
-                style={styles.favorite_image}
-            />
+            <EnlargeShrink shouldEnlarge={shouldEnlarge}>
+                <Image
+                    source={sourceImage}
+                    style={styles.favorite_image}
+                />
+            </EnlargeShrink>
         )
     }
 
     _displayFilm() {
-        console.log('_displayFilm');
+        // console.log('_displayFilm');
         const { film } = this.state
-        console.log(film);
         if (film != undefined) {
             return (
                 <ScrollView style={styles.scrollview_container}>
@@ -151,7 +156,8 @@ class FilmDetail extends React.Component {
         const favoriteFilmIndex = this.props.favoriteFilm.findIndex(item => item.id === this.props.navigation.state.params.idFilm)
         if (favoriteFilmIndex !== -1) {
             this.setState({
-                film: this.props.favoriteFilm[favoriteFilmIndex]
+                film: this.props.favoriteFilm[favoriteFilmIndex],
+                isLoading: false
             }, () => { this._updateNavigationParams() })
             return
         }
@@ -166,6 +172,7 @@ class FilmDetail extends React.Component {
 
         // this._loadDetailFilms(this.props.navigation.state.params.idFilm);
     }
+
 
     render() {
         const idFilm = this.props.navigation.state.params.idFilm;
@@ -226,8 +233,9 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     favorite_image: {
-        width: 40,
-        height: 40
+        flex:1,
+        width: null,
+        height: null
     },
     share_touchable_floatingactionbutton: {
         position: 'absolute',
