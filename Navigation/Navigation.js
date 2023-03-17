@@ -1,10 +1,21 @@
 import { createAppContainer } from 'react-navigation';
 import { createStackNavigator } from 'react-navigation-stack';
 import { createBottomTabNavigator } from 'react-navigation-tabs';
+import { StyleSheet,Image } from 'react-native';
+
 import Search from '../components/Search';
 import FilmDetail from '../components/FilmDetail';
 import Favorites from '../components/Favorites';
-import { StyleSheet,Image } from 'react-native';
+import Test from '../components/Test';
+
+const TestStackNavigator = createStackNavigator({
+    Test:{
+        screen: Test,
+        navigationOptions:{
+            titme: "Search"
+        }
+    },
+});
 
 const SearchStackNavigator = createStackNavigator({
     Search:{
@@ -31,6 +42,9 @@ const FavorisStackNavigator = createStackNavigator({
 });
 
 const MoviestabNavigator = createBottomTabNavigator({
+    // Test:{
+    //     screen: TestStackNavigator,
+    // },
     Search:{
         screen: SearchStackNavigator,
         navigationOptions: {
