@@ -2,9 +2,7 @@
 
 import React from 'react'
 import { StyleSheet, View, Platform } from 'react-native'
-// import Hello from './Hello'//don't work in web dev //use and decomment this for specific dev according to the name of the files (.ios, .android)
-// import Hello from './Hello.ios'
-import Hello from './Hello.android' //comment this without the expo web
+import Hello from './Hello' //chose the right component according to the platform
 
 class Test extends React.Component {
 

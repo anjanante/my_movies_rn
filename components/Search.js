@@ -1,6 +1,6 @@
 // Components/Search.js
 import React from 'react'
-import { StyleSheet, View, TextInput, Button, Text, FlatList, ActivityIndicator } from 'react-native'
+import { StyleSheet, View, TextInput, Button, Text, FlatList, ActivityIndicator, SafeAreaView } from 'react-native'
 // import { data } from '../Helpers/filmsData'
 import FilmItem from './FilmItem'
 import { getFilmsFromtext } from '../API/TMDBApi'
