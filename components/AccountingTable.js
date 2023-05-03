@@ -270,6 +270,7 @@ const AccountingTable = () => {
         rowHasChanged={rowHasChanged}
         showClosingKnob={true}
         minDate={'2022-01-01'}
+        // renderHeader={renderHeader}
         // renderDay={(day, item) => (
         //   <View>
         //     <Text>{day.day}</Text>
@@ -414,7 +415,30 @@ const AccountingTable = () => {
   };
 
 
-  const renderHeader = (date) => {
+  const renderArrow = (direction) => {
+    if (direction === 'left') {
+      // return <Icon name="chevron-left" />;
+      return <Text style={styles.headerText}>Left</Text>;
+      
+    } else {
+      // return <Icon name="chevron-right" />;
+      return <Text style={styles.headerText}>Right</Text>;
+    }
+  };
+
+  const renderHeader = (props) => {
+    // return (
+    //   <View style={styles.header}>
+    //     <TouchableOpacity onPress={() => props.onPressArrowLeft()}>
+    //       {renderArrow('left')}
+    //     </TouchableOpacity>
+    //     <TouchableOpacity onPress={() => props.onPressArrowRight()}>
+    //       {renderArrow('right')}
+    //     </TouchableOpacity>
+    //     <Text style={styles.headerText}>{props.title}</Text>
+    //   </View>
+    // );
+
     if (viewMode === 'day') {
       return (
         <View style={styles.header}>
