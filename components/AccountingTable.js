@@ -350,8 +350,8 @@ const AccountingTable = () => {
         style={[styles.item, { height: item.height }]}
       // onPress={() => Alert.alert(reservation.name)}
       >
-        <Text style={{ fontSize, color }}>Entrée: {item.name}{item.total}Ar</Text>
-        <Text style={{ fontSize, color }}>Sortie: {item.name}540.000Ar</Text>
+        <Text style={{ fontSize, color }}>Entrée: {item.totalInput}{item.total}Ar</Text>
+        <Text style={{ fontSize, color }}>Sortie: {item.totalInput}Ar</Text>
       </TouchableOpacity>
     );
   }
