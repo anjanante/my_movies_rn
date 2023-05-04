@@ -80,8 +80,10 @@ const testIDs = {
 
 const AccountingTable = () => {
   // const { loading } = useLogic();
+  const today = new Date();
+const firstDayOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
   const [selectedDate, setSelectedDate] = useState(
-    new Date().toISOString().slice(0, 10),
+    new Date().toISOString().slice(0, 8)+'01',
   );
   const [tableHead, setTableHead] = useState([
     'Date',
@@ -246,30 +248,28 @@ const AccountingTable = () => {
     return (
       <Agenda
         // testID={testIDs.agenda.CONTAINER}
-        // items={itemState}
-        items={{
-          '2023-05-03': [{totalInput: '244444', totalOutput:'244444'}],
-          '2023-05-04': [],
-          '2023-05-06': [{totalInput: '12'}],
-          '2023-04-22': [{totalInput: '120'}],
-          '2023-03-23': [{totalInput: '1000', totalOutput:'2000', height: 80}],
-          '2023-06-24': [],
-          '2023-05-15': [{totalInput: '500', totalOutput:'200'}]
-        }}
-        // loadItemsForMonth={loadItems}
-        loadItemsForMonth={month => {
-          console.log('trigger items loading');
-        }}
-        onCalendarToggled={calendarOpened => {
-          console.log('onCalendarToggled');
-          console.log(calendarOpened);
-        }}
-        selected={'2023-05-03'}
+        items={itemState}
+        // items={{
+        //   '2023-05-02': [{totalInput: 'item 1 - any js object'}],
+        //   '2023-05-03': [{totalInput: 'item 2 - any js object', height: 80}],
+        //   '2023-05-04': [{totalInput: 'item 3 - any js object'}, {name: 'any js object'}]
+        // }}
+        // loadItemsForMonth={loadItemsForMonth}
+        onDayPress={onDayPressed}
+        // onCalendarToggled={calendarOpened => {
+        //   console.log('onCalendarToggled');
+        //   console.log(calendarOpened);
+        // }}
+        selected={selectedDate}
+        // selected={'2023-04-04'}
         renderItem={renderItem}
         renderEmptyDate={renderEmptyDate}
-        rowHasChanged={rowHasChanged}
+        // rowHasChanged={rowHasChanged}
         showClosingKnob={true}
-        minDate={'2022-01-01'}
+        // minDate={'2022-01-01'}
+        // maxDate={'2023-12-31'}
+        // hideExtraDays={false}
+        // pastScrollRange={5}
         // renderHeader={renderHeader}
         // renderDay={(day, item) => (
         //   <View>
@@ -279,6 +279,7 @@ const AccountingTable = () => {
         // )}
         // markingType={'period'}
         // markedDates={{
+          // '2023-05-02': {selected: true},
         //    '2017-05-08': {textColor: '#43515c'},
         //    '2017-05-09': {textColor: '#43515c'},
         //    '2017-05-14': {startingDay: true, endingDay: true, color: 'blue'},
@@ -286,7 +287,8 @@ const AccountingTable = () => {
         //    '2017-05-22': {endingDay: true, color: 'gray'},
         //    '2017-05-24': {startingDay: true, color: 'gray'},
         //    '2017-05-25': {color: 'gray'},
-        //    '2017-05-26': {endingDay: true, color: 'gray'}}}
+        //    '2017-05-26': {endingDay: true, color: 'gray'}
+        // }}
         // monthFormat={'yyyy'}
         // theme={{calendarBackground: 'red', agendaKnobColor: 'green'}}
         // hideExtraDays={false}
@@ -311,33 +313,93 @@ const AccountingTable = () => {
     );
   };
 
-  const loadItems = (day) => {
-    const items = itemState || {};
+  // const loadItemsForMonthOld = (day) => {
+  //   const items = itemState || {};
+  //   console.log('loadItemsForMonth');
+  //   console.log(day);
+  //   setTimeout(() => {
+  //     console.log(items);
+  //     let b_new = false;
+  //     for (let i = -5; i < 5; i++) {
+  //       const time = day.timestamp + i * 24 * 60 * 60 * 1000;
+  //       const strTime = timeToString(time);
+  //       if (!items[strTime]) {
+  //         console.log('tsy misy le '+strTime);
+  //         items[strTime] = [];
+  //         b_new = true;
+  //         const numItems = Math.floor(Math.random() * 3 + 1);
+  //         for (let j = 0; j < numItems; j++) {
+  //           items[strTime].push({
+  //             name: 'Item for ' + strTime + ' #' + j,
+  //             height: Math.max(50, Math.floor(Math.random() * 150)),
+  //             day: strTime,
+  //             totalInput: numItems,
+  //             totalOutput: numItems + 2,
+  //           });
+  //         }
+  //       }else{
+  //         console.log('efa misy le '+strTime);
+  //       }
+  //     }
 
+  //     console.log(b_new);
+  //     const newItems = {};
+  //     Object.keys(items).forEach(key => {
+  //       newItems[key] = items[key];
+  //     });
+  //     console.log(newItems);
+  //     // setItems(newItems);
+  //   }, 1000);
+  // };
+
+  const onDayPressed = (day) => {
+    console.log('onDayPressed be');
+    console.log(day);
+    console.log(day.dateString.slice(0, 8)+'01');
+    const time = day.timestamp - 5 * 24 * 60 * 60 * 1000;
+    const newday = timeToString(time);
+    setSelectedDate(newday);
+    loadItemsForMonth(day);
+  }
+
+  const loadItemsForMonth = (day) => {
+    const items = itemState || {};
+    const newItems = {};
+    console.log('loadItemsForMonth');
+    console.log(day);
     setTimeout(() => {
-      for (let i = -15; i < 85; i++) {
+      console.log(items);
+      let b_new = false;
+      for (let i = -5; i < 30; i++) {
         const time = day.timestamp + i * 24 * 60 * 60 * 1000;
         const strTime = timeToString(time);
-
         if (!items[strTime]) {
-          items[strTime] = [];
-
+          console.log('tsy misy le '+strTime);
+          newItems[strTime] = [];
+          b_new = true;
           const numItems = Math.floor(Math.random() * 3 + 1);
-          for (let j = 0; j < numItems; j++) {
-            items[strTime].push({
-              name: 'Item for ' + strTime + ' #' + j,
+          // for (let j = 0; j < numItems; j++) {
+            newItems[strTime].push({
+              name: 'Item for ' + strTime,
               height: Math.max(50, Math.floor(Math.random() * 150)),
-              day: strTime
+              day: strTime,
+              totalInput: numItems,
+              totalOutput: numItems + 2,
             });
-          }
+          // }
+        }else{
+          console.log('efa misy le '+strTime);
         }
       }
 
-      const newItems = {};
-      Object.keys(items).forEach(key => {
-        newItems[key] = items[key];
-      });
-      // setItems(newItems)
+      console.log(b_new);
+      // const newItems = {};
+      // Object.keys(items).forEach(key => {
+      //   newItems[key] = items[key];
+      // });
+      console.log(newItems);
+      if(b_new)
+        setItems({...items,...newItems});
     }, 1000);
   }
 
@@ -352,7 +414,7 @@ const AccountingTable = () => {
       // onPress={() => Alert.alert(reservation.name)}
       >
         <Text style={{ fontSize, color }}>Entrée: {item.totalInput}{item.total}Ar</Text>
-        <Text style={{ fontSize, color }}>Sortie: {item.totalInput}Ar</Text>
+        <Text style={{ fontSize, color }}>Sortie: {item.totalOutput}Ar</Text>
       </TouchableOpacity>
     );
   }
@@ -543,12 +605,18 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     padding: 10,
     marginRight: 10,
-    marginTop: 25,
+    marginTop: 28,
   },
   emptyDate: {
     height: 15,
     flex: 1,
     paddingTop: 30
+  },
+  section: {
+    backgroundColor: 'lightgrey',
+    fontWeight: 'bold',
+    fontSize: 18,
+    padding: 20,
   },
   buttonsContainer: {
     flexDirection: 'row',
