@@ -263,6 +263,7 @@ const firstDayOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
         selected={selectedDate}
         // selected={'2023-04-04'}
         renderItem={renderItem}
+        renderSectionHeader={renderSectionHeader}
         renderEmptyDate={renderEmptyDate}
         // rowHasChanged={rowHasChanged}
         showClosingKnob={true}
@@ -402,6 +403,15 @@ const firstDayOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
         setItems({...items,...newItems});
     }, 1000);
   }
+
+  const renderSectionHeader = ({ section }) => {
+    const month = section.title;
+    return (
+      <View style={styles.section}>
+        <Text style={styles.sectionText}>{month}</Text>
+      </View>
+    );
+  };
 
   const renderItem = (item, isFirst) => {
     const fontSize = isFirst ? 16 : 14;
@@ -660,29 +670,28 @@ const styles = StyleSheet.create({
   },
 });
 
-// Fonctions pour le calcul de la semaine
-function getWeekStartDate(date) {
-  const day = date.getDay();
-  return new Date(date.getFullYear(), date.getMonth(), date.getDate() - day);
-}
+function getWeekRangesInMonth(year, month) {
+  const firstDayOfMonth = new Date(year, month, 1);
+  const lastDayOfMonth = new Date(year, month + 1, 0);
+  const firstSundayOfMonth = new Date(firstDayOfMonth);
+  firstSundayOfMonth.setDate(firstSundayOfMonth.getDate() - firstSundayOfMonth.getDay());
 
-function getWeekEndDate(date) {
-  const day = date.getDay();
-  return new Date(date.getFullYear(), date.getMonth(), date.getDate() + 6 - day);
-}
+  const weeks = [];
+  let currentDay = new Date(firstSundayOfMonth);
+  while (currentDay < lastDayOfMonth) {
+    const startOfWeek = new Date(currentDay);
+    const endOfWeek = new Date(currentDay);
+    endOfWeek.setDate(endOfWeek.getDate() + 6);
 
-function getPreviousWeek(week) {
-  return {
-    start: new Date(week.start.getFullYear(), week.start.getMonth(), week.start.getDate() - 7),
-    end: new Date(week.end.getFullYear(), week.end.getMonth(), week.end.getDate() - 7),
-  };
-}
+    weeks.push({
+      startOfWeek,
+      endOfWeek,
+    });
 
-function getNextWeek(week) {
-  return {
-    start: new Date(week.start.getFullYear(), week.start.getMonth(), week.start.getDate() + 7),
-    end: new Date(week.end.getFullYear(), week.end.getMonth(), week.end.getDate() + 7),
-  };
+    currentDay.setDate(currentDay.getDate() + 7);
+  }
+
+  return weeks;
 }
 
 export default AccountingTable;
