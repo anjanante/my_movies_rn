@@ -7,10 +7,11 @@ import Search from '../components/Search';
 import FilmDetail from '../components/FilmDetail';
 import Favorites from '../components/Favorites';
 import Test from '../components/Test';
+import AccountingTable from '../components/AccountingTable';
 
 const TestStackNavigator = createStackNavigator({
     Test:{
-        screen: Test,
+        screen: AccountingTable,
         navigationOptions:{
             titme: "Search"
         }
@@ -42,9 +43,9 @@ const FavorisStackNavigator = createStackNavigator({
 });
 
 const MoviestabNavigator = createBottomTabNavigator({
-    // Test:{
-    //     screen: TestStackNavigator,
-    // },
+    Test:{
+        screen: AccountingTable,
+    },
     Search:{
         screen: SearchStackNavigator,
         navigationOptions: {
