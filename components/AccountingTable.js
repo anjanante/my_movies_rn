@@ -1,10 +1,23 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ExpandableCalendar, AgendaList, CalendarProvider, WeekCalendar } from 'react-native';
-import { Calendar, LocaleConfig, Agenda } from 'react-native-calendars';
+import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import {
+  Calendar,
+  LocaleConfig,
+  Agenda,
+  AgendaHeaderView,
+} from 'react-native-calendars';
 import { Table, Row, Rows } from 'react-native-table-component';
 // import useLogic from '../useLogic';
+// import { COLOR } from '../../../../utils/style';
 
-
+const COLOR  = {
+  primary: '#183861',
+  secondary: '#fccf12',
+  tertiary: '#9c882f',
+  white: '#fff',
+  whiteStandard: '#eee',
+  success: '#2ecc71',
+};
 
 // Configurer la langue pour les calendriers
 LocaleConfig.locales['fr'] = {
@@ -49,41 +62,11 @@ LocaleConfig.locales['fr'] = {
 };
 LocaleConfig.defaultLocale = 'fr';
 
-
-const testIDs = {
-  menu: {
-    CONTAINER: 'menu',
-    CALENDARS: 'calendars_btn',
-    CALENDAR_LIST: 'calendar_list_btn',
-    HORIZONTAL_LIST: 'horizontal_list_btn',
-    AGENDA: 'agenda_btn',
-    EXPANDABLE_CALENDAR: 'expandable_calendar_btn',
-    WEEK_CALENDAR: 'week_calendar_btn',
-    TIMELINE_CALENDAR: 'timeline_calendar_btn',
-    PLAYGROUND: 'playground_btn'
-  },
-  calendars: {
-    CONTAINER: 'calendars',
-    FIRST: 'first_calendar',
-    LAST: 'last_calendar'
-  },
-  calendarList: { CONTAINER: 'calendarList' },
-  horizontalList: { CONTAINER: 'horizontalList' },
-  agenda: {
-    CONTAINER: 'agenda',
-    ITEM: 'item'
-  },
-  expandableCalendar: { CONTAINER: 'expandableCalendar' },
-  weekCalendar: { CONTAINER: 'weekCalendar' }
-};
-
-
-const AccountingTable = () => {
+function AccountingTable() {
   // const { loading } = useLogic();
-  const today = new Date();
-const firstDayOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
+  const currentDate = new Date();
   const [selectedDate, setSelectedDate] = useState(
-    new Date().toISOString().slice(0, 8)+'01',
+    currentDate.toISOString().slice(0, 10),
   );
   const [tableHead, setTableHead] = useState([
     'Date',
@@ -96,6 +79,13 @@ const firstDayOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
 
   const [itemState, setItems] = useState({});
 
+  useEffect(() => {
+    let date = new Date(selectedDate);
+    let day = {dateString:selectedDate,month:date.getMonth()+1,year:date.getFullYear()};
+    console.log('Initialize');
+    console.log(day);
+    loadItemsForMonth(day);
+  },[]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -240,7 +230,6 @@ const firstDayOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
         }
       }
     };
-
     fetchData();
   }, [selectedDate, viewMode]);
 
@@ -250,52 +239,25 @@ const firstDayOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
         // testID={testIDs.agenda.CONTAINER}
         items={itemState}
         // items={{
-        //   '2023-05-02': [{totalInput: 'item 1 - any js object'}],
-        //   '2023-05-03': [{totalInput: 'item 2 - any js object', height: 80}],
-        //   '2023-05-04': [{totalInput: 'item 3 - any js object'}, {name: 'any js object'}]
+        //   '2023-04-30': [{totalInput: 'item 1 - any js object',day:'2023-04-30'}],
+        //   '2023-05-04': [{totalInput: 'item 2 - any js object', height: 80,day:'2023-05-04'}],
+        //   '2023-05-05': [{totalInput: 'item 2 - any js object', height: 80,day:'2023-05-04'}],
+        //   '2023-05-07': [{totalInput: 'item 2 - any js object', height: 80,day:'2023-05-07'}],
+        //   '2023-05-14': [{totalInput: 'item 3 - any js object any js object',day:'2023-05-14'}],
+        //   '2023-05-21': [{totalInput: 'item 3 - any js object any js object',day:'2023-05-21'}],
+        //   '2023-05-28': [{totalInput: 'item 3 - any js object any js object',day:'2023-05-28'}],
         // }}
         // loadItemsForMonth={loadItemsForMonth}
         onDayPress={onDayPressed}
-        // onCalendarToggled={calendarOpened => {
-        //   console.log('onCalendarToggled');
-        //   console.log(calendarOpened);
-        // }}
         selected={selectedDate}
-        // selected={'2023-04-04'}
+        // selected={'2023-04-30'}
+        maxDate={currentDate.toISOString().slice(0, 10)}
         renderItem={renderItem}
-        renderSectionHeader={renderSectionHeader}
         renderEmptyDate={renderEmptyDate}
-        // rowHasChanged={rowHasChanged}
+        onDayChange={onDayChange}
+        renderDay={renderDay}
+        rowHasChanged={rowHasChanged}
         showClosingKnob={true}
-        // minDate={'2022-01-01'}
-        // maxDate={'2023-12-31'}
-        // hideExtraDays={false}
-        // pastScrollRange={5}
-        // renderHeader={renderHeader}
-        // renderDay={(day, item) => (
-        //   <View>
-        //     <Text>{day.day}</Text>
-        //     <Text>{day.dateString}</Text>
-        //   </View>
-        // )}
-        // markingType={'period'}
-        // markedDates={{
-          // '2023-05-02': {selected: true},
-        //    '2017-05-08': {textColor: '#43515c'},
-        //    '2017-05-09': {textColor: '#43515c'},
-        //    '2017-05-14': {startingDay: true, endingDay: true, color: 'blue'},
-        //    '2017-05-21': {startingDay: true, color: 'blue'},
-        //    '2017-05-22': {endingDay: true, color: 'gray'},
-        //    '2017-05-24': {startingDay: true, color: 'gray'},
-        //    '2017-05-25': {color: 'gray'},
-        //    '2017-05-26': {endingDay: true, color: 'gray'}
-        // }}
-        // monthFormat={'yyyy'}
-        // theme={{calendarBackground: 'red', agendaKnobColor: 'green'}}
-        // hideExtraDays={false}
-        // showOnlySelectedDayItems
-        // reservationsKeyExtractor={this.reservationsKeyExtractor}
-        // style={{backgroundColor:'gray',paddingBottom:20}}
       />
     );
   };
@@ -314,108 +276,128 @@ const firstDayOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
     );
   };
 
-  // const loadItemsForMonthOld = (day) => {
-  //   const items = itemState || {};
-  //   console.log('loadItemsForMonth');
-  //   console.log(day);
-  //   setTimeout(() => {
-  //     console.log(items);
-  //     let b_new = false;
-  //     for (let i = -5; i < 5; i++) {
-  //       const time = day.timestamp + i * 24 * 60 * 60 * 1000;
-  //       const strTime = timeToString(time);
-  //       if (!items[strTime]) {
-  //         console.log('tsy misy le '+strTime);
-  //         items[strTime] = [];
-  //         b_new = true;
-  //         const numItems = Math.floor(Math.random() * 3 + 1);
-  //         for (let j = 0; j < numItems; j++) {
-  //           items[strTime].push({
-  //             name: 'Item for ' + strTime + ' #' + j,
-  //             height: Math.max(50, Math.floor(Math.random() * 150)),
-  //             day: strTime,
-  //             totalInput: numItems,
-  //             totalOutput: numItems + 2,
-  //           });
-  //         }
-  //       }else{
-  //         console.log('efa misy le '+strTime);
-  //       }
-  //     }
-
-  //     console.log(b_new);
-  //     const newItems = {};
-  //     Object.keys(items).forEach(key => {
-  //       newItems[key] = items[key];
-  //     });
-  //     console.log(newItems);
-  //     // setItems(newItems);
-  //   }, 1000);
-  // };
-
-  const onDayPressed = (day) => {
+  const onDayPressed = day => {
     console.log('onDayPressed be');
-    console.log(day);
-    console.log(day.dateString.slice(0, 8)+'01');
-    const time = day.timestamp - 5 * 24 * 60 * 60 * 1000;
-    const newday = timeToString(time);
-    setSelectedDate(newday);
-    loadItemsForMonth(day);
-  }
+    // const time = day.timestamp - 5 * 24 * 60 * 60 * 1000;
+    // const newday = timeToString(time);
+    // setSelectedDate(newday);
 
-  const loadItemsForMonth = (day) => {
+    // const items = itemState || {};
+    // if (!items[day.dateString]) {
+    //   loadItemsForMonth(day);
+    // }else{
+    //   console.log('Efa miexiste le date');
+    // }
+  };
+
+  const onDayChange = (day, item) => {
+    console.log('onDayChange');
+    console.log(day);
+  };
+
+  const loadItemsForMonth = day => {
     const items = itemState || {};
     const newItems = {};
+    console.log(
+      '----------------------------------------------------------------',
+    );
     console.log('loadItemsForMonth');
     console.log(day);
+
     setTimeout(() => {
-      console.log(items);
+      const weeksInMonth = getWeekRangesInMonth(day.year, day.month - 1);
+      console.log(weeksInMonth[0]);
       let b_new = false;
-      for (let i = -5; i < 30; i++) {
-        const time = day.timestamp + i * 24 * 60 * 60 * 1000;
-        const strTime = timeToString(time);
-        if (!items[strTime]) {
-          console.log('tsy misy le '+strTime);
-          newItems[strTime] = [];
-          b_new = true;
-          const numItems = Math.floor(Math.random() * 3 + 1);
-          // for (let j = 0; j < numItems; j++) {
-            newItems[strTime].push({
-              name: 'Item for ' + strTime,
-              height: Math.max(50, Math.floor(Math.random() * 150)),
-              day: strTime,
-              totalInput: numItems,
-              totalOutput: numItems + 2,
+      let numItems = weeksInMonth.length;
+      for (let i = 0; i < numItems; i++) {
+        let date = weeksInMonth[i].startOfWeek.toISOString().slice(0, 10);
+        //select first day and week
+        if (i == 0) setSelectedDate(date);
+
+        let datesOfWeek = weeksInMonth[i].datesOfWeek;
+        let datesOfWeekLen = datesOfWeek.length;
+        for (let j = 0; j < datesOfWeekLen; j++) {
+          let date = datesOfWeek[j].date.toISOString().slice(0, 10);
+          if (datesOfWeek[j].date > currentDate) { i = numItems; break; };
+          if (!items[date]) {
+            console.log('Mbola tsis le ' + date);
+            b_new = true;
+            newItems[date] = [];
+            newItems[date].push({
+              viewMode: viewMode,
+              day: datesOfWeek[j].date,
+              totalInput: datesOfWeek[j].totalInput,
+              totalOutput: datesOfWeek[j].totalOutput,
             });
-          // }
-        }else{
-          console.log('efa misy le '+strTime);
+          }
         }
       }
 
-      console.log(b_new);
-      // const newItems = {};
-      // Object.keys(items).forEach(key => {
-      //   newItems[key] = items[key];
-      // });
-      console.log(newItems);
-      if(b_new)
-        setItems({...items,...newItems});
+      if (b_new) setItems({ ...items, ...newItems });
     }, 1000);
-  }
 
-  const renderSectionHeader = ({ section }) => {
-    const month = section.title;
-    return (
-      <View style={styles.section}>
-        <Text style={styles.sectionText}>{month}</Text>
-      </View>
-    );
+    // console.log('----------------------------------------------------------------');
+    // console.log(items);
+
+    // setTimeout(() => {
+    //   let b_new = false;
+    //   for (let i = -5; i < 30; i++) {
+    //     const time = day.timestamp + i * 24 * 60 * 60 * 1000;
+    //     const strTime = timeToString(time);
+    //     if (!items[strTime]) {
+    //       newItems[strTime] = [];
+    //       b_new = true;
+    //       const numItems = Math.floor(Math.random() * 3 + 1);
+    //       // for (let j = 0; j < numItems; j++) {
+    //       newItems[strTime].push({
+    //         name: 'Item for ' + strTime,
+    //         height: 50,
+    //         day: new Date(strTime),
+    //         totalInput: numItems,
+    //         totalOutput: numItems + 2,
+    //       });
+    //       // }
+    //     }
+    //   }
+
+    //   // const newItems = {};
+    //   // Object.keys(items).forEach(key => {
+    //   //   newItems[key] = items[key];
+    //   // });
+    //   if (b_new) setItems({...items, ...newItems});
+    // }, 1000);
+  };
+
+  const renderDay = (day, item) => {
+    const monthNames = LocaleConfig.locales['fr'].monthNamesShort;
+    const date = new Date(item.day);
+    const month = monthNames[date.getMonth()];
+
+    if (item.viewMode == 'week') {
+      const dateEnd = new Date(item.endOfWeek);
+      const monthEnd = monthNames[dateEnd.getMonth()];
+      return (
+        <View style={styles.itemSide}>
+          <Text style={styles.itemDay}>{date.getDate()}</Text>
+          <Text style={styles.itemMonth}>{month}</Text>
+          <Text>-</Text>
+          <Text style={styles.itemDay}>{dateEnd.getDate()}</Text>
+          <Text style={styles.itemMonth}>{monthEnd}</Text>
+        </View>
+      );
+    } else {
+      return (
+        <View style={styles.itemSide}>
+          <Text style={styles.itemDay}>{date.getDate()}</Text>
+          <Text style={styles.itemMonth}>{month}</Text>
+        </View>
+      );
+    }
   };
 
   const renderItem = (item, isFirst) => {
-    const fontSize = isFirst ? 16 : 14;
-    const color = isFirst ? 'black' : '#43515c';
+    const fontSize = 14;
+    const color = '#43515c';
 
     return (
       <TouchableOpacity
@@ -423,11 +405,14 @@ const firstDayOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
         style={[styles.item, { height: item.height }]}
       // onPress={() => Alert.alert(reservation.name)}
       >
-        <Text style={{ fontSize, color }}>Entrée: {item.totalInput}{item.total}Ar</Text>
+        <Text style={{ fontSize, color }}>
+          Entrée: {item.totalInput}
+          {item.total}Ar
+        </Text>
         <Text style={{ fontSize, color }}>Sortie: {item.totalOutput}Ar</Text>
       </TouchableOpacity>
     );
-  }
+  };
 
   const renderEmptyDate = () => {
     return (
@@ -435,119 +420,116 @@ const firstDayOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
         <Text>Empty date!</Text>
       </View>
     );
-  }
+  };
 
   const rowHasChanged = (r1, r2) => {
     return r1.totalInput !== r2.totalInput;
-  }
+  };
 
-  const timeToString = (time) => {
+  const timeToString = time => {
     const date = new Date(time);
     return date.toISOString().split('T')[0];
-  }
+  };
 
   const handleDayPress = day => {
-    console.log('handleDayPress');
     setSelectedDate(day.dateString);
     setViewMode('day');
   };
 
   const handleWeekPress = () => {
-    console.log('handleWeekPress');
     setViewMode('week');
+    setItems({});
   };
 
-  const handleWeekChange = (week) => {
+  const handleWeekChange = week => {
     console.log('handleWeekChange');
     // setSelectedWeek(week);
     // setSelectedDate(week.start);
   };
 
   const handleMonthPress = () => {
-    console.log('handleMonthPress');
     setViewMode('month');
+    setItems({});
   };
 
-  const handleMonthChange = (week) => {
+  const handleMonthChange = week => {
     console.log('handleMonthChange');
     // setSelectedWeek(week);
     // setSelectedDate(week.start);
   };
 
-  const onPressPrev = () => {
-    const prevMonth = new Date(selectedDate);
-    prevMonth.setMonth(prevMonth.getMonth() - 1);
-    setSelectedDate(prevMonth.toISOString());
-  };
-
-  const onPressNext = () => {
-    const nextMonth = new Date(selectedDate);
-    nextMonth.setMonth(nextMonth.getMonth() + 1);
-    setSelectedDate(nextMonth.toISOString());
-  };
-
-
-  const renderArrow = (direction) => {
-    if (direction === 'left') {
-      // return <Icon name="chevron-left" />;
-      return <Text style={styles.headerText}>Left</Text>;
-      
-    } else {
-      // return <Icon name="chevron-right" />;
-      return <Text style={styles.headerText}>Right</Text>;
-    }
-  };
-
-  const renderHeader = (props) => {
-    // return (
-    //   <View style={styles.header}>
-    //     <TouchableOpacity onPress={() => props.onPressArrowLeft()}>
-    //       {renderArrow('left')}
-    //     </TouchableOpacity>
-    //     <TouchableOpacity onPress={() => props.onPressArrowRight()}>
-    //       {renderArrow('right')}
-    //     </TouchableOpacity>
-    //     <Text style={styles.headerText}>{props.title}</Text>
-    //   </View>
-    // );
-
+  const renderHeaderOld = date => {
     if (viewMode === 'day') {
       return (
         <View style={styles.header}>
           <TouchableOpacity onPress={() => onChange('prev')}>
-            <MaterialCommunityIcons name="chevron-left" size={30} color="#6a1b9a" />
+            <MaterialCommunityIcons
+              name="chevron-left"
+              size={30}
+              color="#6a1b9a"
+            />
           </TouchableOpacity>
           <Text style={styles.title}>{date.toDateString()}</Text>
           <TouchableOpacity onPress={() => onChange('next')}>
-            <MaterialCommunityIcons name="chevron-right" size={30} color="#6a1b9a" />
+            <MaterialCommunityIcons
+              name="chevron-right"
+              size={30}
+              color="#6a1b9a"
+            />
           </TouchableOpacity>
         </View>
       );
     } else if (viewMode === 'week') {
-      const startOfWeek = new Date(date.getFullYear(), date.getMonth(), date.getDate() - date.getDay());
-      const endOfWeek = new Date(date.getFullYear(), date.getMonth(), date.getDate() - date.getDay() + 6);
+      const startOfWeek = new Date(
+        date.getFullYear(),
+        date.getMonth(),
+        date.getDate() - date.getDay(),
+      );
+      const endOfWeek = new Date(
+        date.getFullYear(),
+        date.getMonth(),
+        date.getDate() - date.getDay() + 6,
+      );
       const weekRange = `${startOfWeek.toDateString()} - ${endOfWeek.toDateString()}`;
       return (
         <View style={styles.header}>
           <TouchableOpacity onPress={() => onChange('prev')}>
-            <MaterialCommunityIcons name="chevron-left" size={30} color="#6a1b9a" />
+            <MaterialCommunityIcons
+              name="chevron-left"
+              size={30}
+              color="#6a1b9a"
+            />
           </TouchableOpacity>
           <Text style={styles.title}>{weekRange}</Text>
           <TouchableOpacity onPress={() => onChange('next')}>
-            <MaterialCommunityIcons name="chevron-right" size={30} color="#6a1b9a" />
+            <MaterialCommunityIcons
+              name="chevron-right"
+              size={30}
+              color="#6a1b9a"
+            />
           </TouchableOpacity>
         </View>
       );
     } else if (viewMode === 'month') {
-      const monthYear = `${date.toLocaleString('default', { month: 'long' })} ${date.getFullYear()}`;
+      const monthYear = `${date.toLocaleString('default', {
+        month: 'long',
+      })} ${date.getFullYear()}`;
       return (
         <View style={styles.header}>
           <TouchableOpacity onPress={() => onChange('prev')}>
-            <MaterialCommunityIcons name="chevron-left" size={30} color="#6a1b9a" />
+            <MaterialCommunityIcons
+              name="chevron-left"
+              size={30}
+              color="#6a1b9a"
+            />
           </TouchableOpacity>
           <Text style={styles.title}>{monthYear}</Text>
           <TouchableOpacity onPress={() => onChange('next')}>
-            <MaterialCommunityIcons name="chevron-right" size={30} color="#6a1b9a" />
+            <MaterialCommunityIcons
+              name="chevron-right"
+              size={30}
+              color="#6a1b9a"
+            />
           </TouchableOpacity>
         </View>
       );
@@ -592,7 +574,6 @@ const firstDayOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
         </TouchableOpacity>
       </View>
 
-
       <View style={{ flex: 4 }}>
         <MyCalendar onDayPress={handleDayPress} />
       </View>
@@ -602,7 +583,7 @@ const firstDayOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
       </View>
     </View>
   );
-};
+}
 
 const styles = StyleSheet.create({
   container: {
@@ -617,10 +598,21 @@ const styles = StyleSheet.create({
     marginRight: 10,
     marginTop: 28,
   },
+  itemSide: {
+    alignItems: 'center',
+    borderRadius: 5,
+    padding: 10,
+    marginRight: 10,
+    marginTop: 22,
+  },
+  itemDay: {
+    fontSize: 25,
+    color: COLOR.tertiary,
+  },
   emptyDate: {
     height: 15,
     flex: 1,
-    paddingTop: 30
+    paddingTop: 30,
   },
   section: {
     backgroundColor: 'lightgrey',
@@ -668,13 +660,27 @@ const styles = StyleSheet.create({
     fontSize: 16,
     textAlign: 'center',
   },
+  month: {
+    fontWeight: 'bold',
+    fontSize: 16,
+    textAlign: 'center',
+    paddingVertical: 10,
+    backgroundColor: '#f2f2f2',
+  },
 });
 
 function getWeekRangesInMonth(year, month) {
-  const firstDayOfMonth = new Date(year, month, 1);
-  const lastDayOfMonth = new Date(year, month + 1, 0);
+  const firstDayOfMonth = new Date(Date.UTC(year, month, 1));
+  const lastDayOfMonth = new Date(Date.UTC(year, month + 1, 0));
   const firstSundayOfMonth = new Date(firstDayOfMonth);
-  firstSundayOfMonth.setDate(firstSundayOfMonth.getDate() - firstSundayOfMonth.getDay());
+  firstSundayOfMonth.setDate(
+    firstSundayOfMonth.getDate() - firstSundayOfMonth.getDay(),
+  );
+
+  console.log('getWeekRangesInMonth');
+  console.log(firstDayOfMonth);
+  console.log(lastDayOfMonth);
+  console.log(firstSundayOfMonth);
 
   const weeks = [];
   let currentDay = new Date(firstSundayOfMonth);
@@ -683,9 +689,24 @@ function getWeekRangesInMonth(year, month) {
     const endOfWeek = new Date(currentDay);
     endOfWeek.setDate(endOfWeek.getDate() + 6);
 
+    const datesOfWeek = [];
+    let inputOfWeek = 0;
+    let outputOfWeek = 0;
+    for (let i = 0; i <= 6; i++) {
+      const date = new Date(startOfWeek.getTime() + i * 24 * 60 * 60 * 1000);
+      let totalInput = 23;
+      let totalOutput = 2;
+      datesOfWeek.push({ date, totalInput, totalOutput });
+      inputOfWeek += totalInput;
+      outputOfWeek += totalOutput;
+    }
+
     weeks.push({
       startOfWeek,
+      datesOfWeek,
       endOfWeek,
+      inputOfWeek,
+      outputOfWeek
     });
 
     currentDay.setDate(currentDay.getDate() + 7);
