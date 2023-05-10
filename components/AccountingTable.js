@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import {
   Calendar,
@@ -10,7 +10,7 @@ import { Table, Row, Rows } from 'react-native-table-component';
 // import useLogic from '../useLogic';
 // import { COLOR } from '../../../../utils/style';
 
-const COLOR  = {
+const COLOR = {
   primary: '#183861',
   secondary: '#fccf12',
   tertiary: '#9c882f',
@@ -75,187 +75,198 @@ function AccountingTable() {
     'Total',
   ]);
   const [tableData, setTableData] = useState([]);
+  const [weekTable, setWeekTable] = useState([]);
   const [viewMode, setViewMode] = useState('month');
-
   const [itemState, setItems] = useState({});
+  const [test, setTest] = useState(0);
+
+  const isMounted = useRef(false);
 
   useEffect(() => {
-    let date = new Date(selectedDate);
-    let day = {dateString:selectedDate,month:date.getMonth()+1,year:date.getFullYear()};
-    console.log('Initialize');
-    console.log(day);
-    loadItemsForMonth(day);
-  },[]);
+    isMounted.current = true;
 
-  useEffect(() => {
-    const fetchData = async () => {
-      // Simulate API call to get company delivery data
-      const deliveryData = [
-        { date: '2023-05-01', input: 10, output: 5 },
-        { date: '2023-05-02', input: 7, output: 3 },
-        { date: '2023-05-03', input: 8, output: 6 },
-        { date: '2023-05-04', input: 5, output: 4 },
-        { date: '2023-05-05', input: 12, output: 8 },
-        { date: '2023-05-06', input: 15, output: 10 },
-        { date: '2023-05-07', input: 9, output: 6 },
-        { date: '2023-05-08', input: 11, output: 7 },
-        { date: '2023-05-09', input: 6, output: 3 },
-        { date: '2023-05-10', input: 7, output: 5 },
-        { date: '2023-05-11', input: 10, output: 8 },
-        { date: '2023-05-12', input: 13, output: 9 },
-        { date: '2023-05-13', input: 8, output: 6 },
-        { date: '2023-05-14', input: 7, output: 4 },
-        { date: '2023-05-15', input: 12, output: 8 },
-        { date: '2023-05-16', input: 16, output: 12 },
-        { date: '2023-05-17', input: 9, output: 6 },
-        { date: '2023-05-18', input: 11, output: 7 },
-        { date: '2023-05-19', input: 5, output: 3 },
-        { date: '2023-05-20', input: 7, output: 4 },
-        { date: '2023-05-21', input: 10, output: 8 },
-        { date: '2023-05-22', input: 13, output: 9 },
-        { date: '2023-05-23', input: 8, output: 6 },
-        { date: '2023-05-24', input: 7, output: 4 },
-        { date: '2023-05-25', input: 12, output: 9 },
-        { date: '2023-05-26', input: 14, output: 10 },
-        { date: '2023-05-27', input: 11, output: 6 },
-        { date: '2023-05-28', input: 9, output: 7 },
-        { date: '2023-05-29', input: 12, output: 8 },
-        { date: '2023-05-30', input: 15, output: 11 },
-        { date: '2023-05-31', input: 6, output: 4 },
-      ];
-      // Calculate data based on selected view mode
-      if (viewMode === 'day') {
-        const filteredData = deliveryData.filter(
-          data => data.date === selectedDate,
-        );
-        if (filteredData.length === 0) {
-          setTableData([['-', '-', '-', '-']]);
-        } else {
-          const total = filteredData.reduce(
-            (acc, cur) => acc + cur.input - cur.output,
-            0,
-          );
-          setTableData([
-            [
-              selectedDate,
-              filteredData[0].input,
-              filteredData[0].output,
-              total,
-            ],
-          ]);
-        }
-      } else if (viewMode === 'week') {
-        const filteredData = deliveryData.filter(data => {
-          const dataDate = new Date(data.date);
-          const selectedDateObj = new Date(selectedDate);
-          const weekStart = new Date(
-            selectedDateObj.setDate(
-              selectedDateObj.getDate() -
-              selectedDateObj.getDay() +
-              (selectedDateObj.getDay() === 0 ? -6 : 1),
-            ),
-          )
-            .toISOString()
-            .slice(0, 10);
-          const weekEnd = new Date(
-            selectedDateObj.setDate(
-              selectedDateObj.getDate() - selectedDateObj.getDay() + 7,
-            ),
-          )
-            .toISOString()
-            .slice(0, 10);
-          return data.date >= weekStart && data.date <= weekEnd;
-        });
-        if (filteredData.length === 0) {
-          setTableData([['-', '-', '-', '-']]);
-        } else {
-          const totalInput = filteredData.reduce(
-            (acc, cur) => acc + cur.input,
-            0,
-          );
-          const totalOutput = filteredData.reduce(
-            (acc, cur) => acc + cur.output,
-            0,
-          );
-          const total = filteredData.reduce(
-            (acc, cur) => acc + cur.input - cur.output,
-            0,
-          );
-          setTableData([
-            [
-              `${new Date(selectedDate).toLocaleDateString('en-US', {
-                month: 'short',
-                day: 'numeric',
-              })} - ${new Date(selectedDate).toLocaleDateString('en-US', {
-                month: 'short',
-                day: 'numeric',
-                year: 'numeric',
-              })}`,
-              totalInput,
-              totalOutput,
-              total,
-            ],
-          ]);
-        }
-      } else if (viewMode === 'month') {
-        const filteredData = deliveryData.filter(
-          data => data.date.slice(0, 7) === selectedDate.slice(0, 7),
-        );
-        if (filteredData.length === 0) {
-          setTableData([['-', '-', '-', '-']]);
-        } else {
-          const totalInput = filteredData.reduce(
-            (acc, cur) => acc + cur.input,
-            0,
-          );
-          const totalOutput = filteredData.reduce(
-            (acc, cur) => acc + cur.output,
-            0,
-          );
-          const total = filteredData.reduce(
-            (acc, cur) => acc + cur.input - cur.output,
-            0,
-          );
-          setTableData([
-            [
-              new Date(selectedDate).toLocaleDateString('en-US', {
-                month: 'long',
-                year: 'numeric',
-              }),
-              totalInput,
-              totalOutput,
-              total,
-            ],
-          ]);
-        }
-      }
+    // let date = new Date(selectedDate);
+    // let day = { dateString: selectedDate, month: date.getMonth() + 1, year: date.getFullYear() };
+    // console.log('Initialize');
+    // console.log(day);
+    // loadItemsForMonth(day);
+
+    return () => {
+      isMounted.current = false;
     };
-    fetchData();
-  }, [selectedDate, viewMode]);
+  }, []);
+
+  // useEffect(() => {
+  //   console.log('useEffect 2');
+  //   const fetchData = async () => {
+  //     // // Simulate API call to get company delivery data
+  //     // const deliveryData = [
+  //     //   { date: '2023-05-01', input: 10, output: 5 },
+  //     //   { date: '2023-05-02', input: 7, output: 3 },
+  //     //   { date: '2023-05-03', input: 8, output: 6 },
+  //     //   { date: '2023-05-04', input: 5, output: 4 },
+  //     //   { date: '2023-05-05', input: 12, output: 8 },
+  //     //   { date: '2023-05-06', input: 15, output: 10 },
+  //     //   { date: '2023-05-07', input: 9, output: 6 },
+  //     //   { date: '2023-05-08', input: 11, output: 7 },
+  //     //   { date: '2023-05-09', input: 6, output: 3 },
+  //     //   { date: '2023-05-10', input: 7, output: 5 },
+  //     //   { date: '2023-05-11', input: 10, output: 8 },
+  //     //   { date: '2023-05-12', input: 13, output: 9 },
+  //     //   { date: '2023-05-13', input: 8, output: 6 },
+  //     //   { date: '2023-05-14', input: 7, output: 4 },
+  //     //   { date: '2023-05-15', input: 12, output: 8 },
+  //     //   { date: '2023-05-16', input: 16, output: 12 },
+  //     //   { date: '2023-05-17', input: 9, output: 6 },
+  //     //   { date: '2023-05-18', input: 11, output: 7 },
+  //     //   { date: '2023-05-19', input: 5, output: 3 },
+  //     //   { date: '2023-05-20', input: 7, output: 4 },
+  //     //   { date: '2023-05-21', input: 10, output: 8 },
+  //     //   { date: '2023-05-22', input: 13, output: 9 },
+  //     //   { date: '2023-05-23', input: 8, output: 6 },
+  //     //   { date: '2023-05-24', input: 7, output: 4 },
+  //     //   { date: '2023-05-25', input: 12, output: 9 },
+  //     //   { date: '2023-05-26', input: 14, output: 10 },
+  //     //   { date: '2023-05-27', input: 11, output: 6 },
+  //     //   { date: '2023-05-28', input: 9, output: 7 },
+  //     //   { date: '2023-05-29', input: 12, output: 8 },
+  //     //   { date: '2023-05-30', input: 15, output: 11 },
+  //     //   { date: '2023-05-31', input: 6, output: 4 },
+  //     // ];
+  //     // // Calculate data based on selected view mode
+  //     // if (viewMode === 'day') {
+  //     //   const filteredData = deliveryData.filter(
+  //     //     data => data.date === selectedDate,
+  //     //   );
+  //     //   if (filteredData.length === 0) {
+  //     //     setTableData([['-', '-', '-', '-']]);
+  //     //   } else {
+  //     //     const total = filteredData.reduce(
+  //     //       (acc, cur) => acc + cur.input - cur.output,
+  //     //       0,
+  //     //     );
+  //     //     setTableData([
+  //     //       [
+  //     //         selectedDate,
+  //     //         filteredData[0].input,
+  //     //         filteredData[0].output,
+  //     //         total,
+  //     //       ],
+  //     //     ]);
+  //     //   }
+  //     // } else if (viewMode === 'week') {
+  //     //   const filteredData = deliveryData.filter(data => {
+  //     //     const dataDate = new Date(data.date);
+  //     //     const selectedDateObj = new Date(selectedDate);
+  //     //     const weekStart = new Date(
+  //     //       selectedDateObj.setDate(
+  //     //         selectedDateObj.getDate() -
+  //     //         selectedDateObj.getDay() +
+  //     //         (selectedDateObj.getDay() === 0 ? -6 : 1),
+  //     //       ),
+  //     //     )
+  //     //       .toISOString()
+  //     //       .slice(0, 10);
+  //     //     const weekEnd = new Date(
+  //     //       selectedDateObj.setDate(
+  //     //         selectedDateObj.getDate() - selectedDateObj.getDay() + 7,
+  //     //       ),
+  //     //     )
+  //     //       .toISOString()
+  //     //       .slice(0, 10);
+  //     //     return data.date >= weekStart && data.date <= weekEnd;
+  //     //   });
+  //     //   if (filteredData.length === 0) {
+  //     //     setTableData([['-', '-', '-', '-']]);
+  //     //   } else {
+  //     //     const totalInput = filteredData.reduce(
+  //     //       (acc, cur) => acc + cur.input,
+  //     //       0,
+  //     //     );
+  //     //     const totalOutput = filteredData.reduce(
+  //     //       (acc, cur) => acc + cur.output,
+  //     //       0,
+  //     //     );
+  //     //     const total = filteredData.reduce(
+  //     //       (acc, cur) => acc + cur.input - cur.output,
+  //     //       0,
+  //     //     );
+  //     //     setTableData([
+  //     //       [
+  //     //         `${new Date(selectedDate).toLocaleDateString('en-US', {
+  //     //           month: 'short',
+  //     //           day: 'numeric',
+  //     //         })} - ${new Date(selectedDate).toLocaleDateString('en-US', {
+  //     //           month: 'short',
+  //     //           day: 'numeric',
+  //     //           year: 'numeric',
+  //     //         })}`,
+  //     //         totalInput,
+  //     //         totalOutput,
+  //     //         total,
+  //     //       ],
+  //     //     ]);
+  //     //   }
+  //     // } else if (viewMode === 'month') {
+  //     //   const filteredData = deliveryData.filter(
+  //     //     data => data.date.slice(0, 7) === selectedDate.slice(0, 7),
+  //     //   );
+  //     //   if (filteredData.length === 0) {
+  //     //     setTableData([['-', '-', '-', '-']]);
+  //     //   } else {
+  //     //     const totalInput = filteredData.reduce(
+  //     //       (acc, cur) => acc + cur.input,
+  //     //       0,
+  //     //     );
+  //     //     const totalOutput = filteredData.reduce(
+  //     //       (acc, cur) => acc + cur.output,
+  //     //       0,
+  //     //     );
+  //     //     const total = filteredData.reduce(
+  //     //       (acc, cur) => acc + cur.input - cur.output,
+  //     //       0,
+  //     //     );
+  //     //     setTableData([
+  //     //       [
+  //     //         new Date(selectedDate).toLocaleDateString('en-US', {
+  //     //           month: 'long',
+  //     //           year: 'numeric',
+  //     //         }),
+  //     //         totalInput,
+  //     //         totalOutput,
+  //     //         total,
+  //     //       ],
+  //     //     ]);
+  //     //   }
+  //     // }
+  //   };
+  //   fetchData();
+  // }, [selectedDate, viewMode]);
 
   const MyCalendar = ({ onDayPress }) => {
     return (
       <Agenda
         // testID={testIDs.agenda.CONTAINER}
-        items={itemState}
-        // items={{
-        //   '2023-04-30': [{totalInput: 'item 1 - any js object',day:'2023-04-30'}],
-        //   '2023-05-04': [{totalInput: 'item 2 - any js object', height: 80,day:'2023-05-04'}],
-        //   '2023-05-05': [{totalInput: 'item 2 - any js object', height: 80,day:'2023-05-04'}],
-        //   '2023-05-07': [{totalInput: 'item 2 - any js object', height: 80,day:'2023-05-07'}],
-        //   '2023-05-14': [{totalInput: 'item 3 - any js object any js object',day:'2023-05-14'}],
-        //   '2023-05-21': [{totalInput: 'item 3 - any js object any js object',day:'2023-05-21'}],
-        //   '2023-05-28': [{totalInput: 'item 3 - any js object any js object',day:'2023-05-28'}],
-        // }}
+        // items={itemState}
+        items={{
+          '2023-04-30': [{totalInput: 'item 1 - any js object',day:'2023-04-30'}],
+          '2023-05-04': [{totalInput: 'item 2 - any js object', height: 80,day:'2023-05-04'}],
+          '2023-05-05': [{totalInput: 'item 2 - any js object', height: 80,day:'2023-05-04'}],
+          '2023-05-07': [{totalInput: 'item 2 - any js object', height: 80,day:'2023-05-07'}],
+          '2023-05-14': [{totalInput: 'item 3 - any js object any js object',day:'2023-05-14'}],
+          '2023-05-21': [{totalInput: 'item 3 - any js object any js object',day:'2023-05-21'}],
+          '2023-05-28': [{totalInput: 'item 3 - any js object any js object',day:'2023-05-28'}],
+        }}
         // loadItemsForMonth={loadItemsForMonth}
         onDayPress={onDayPressed}
-        selected={selectedDate}
-        // selected={'2023-04-30'}
+        // selected={selectedDate}
+        selected={'2023-04-30'}
         maxDate={currentDate.toISOString().slice(0, 10)}
-        renderItem={renderItem}
+        // renderItem={renderItem}
         renderEmptyDate={renderEmptyDate}
         onDayChange={onDayChange}
-        renderDay={renderDay}
+        onScroll={handleScroll}
+        // renderDay={renderDay}
         rowHasChanged={rowHasChanged}
         showClosingKnob={true}
       />
@@ -282,17 +293,34 @@ function AccountingTable() {
     // const newday = timeToString(time);
     // setSelectedDate(newday);
 
-    // const items = itemState || {};
+    const items = itemState || {};
+    console.log(items);
     // if (!items[day.dateString]) {
     //   loadItemsForMonth(day);
     // }else{
     //   console.log('Efa miexiste le date');
     // }
+
+    // setSelectedDate(day.dateString);
+    // setTest(2);
+    //set weeks data
+    // setWeekTable([['D', 'A', 'B', 'C']]);
   };
 
   const onDayChange = (day, item) => {
     console.log('onDayChange');
     console.log(day);
+    // setTest(2);
+    // setSelectedDate(day.dateString);
+  };
+
+  const handleScroll = (day) => {
+    console.log('handleScroll');
+    console.log(day);
+    console.log(isMounted);
+    if (isMounted.current) {
+      setWeekTable([['D', 'A', 'B', 'C']]);
+    }
   };
 
   const loadItemsForMonth = day => {
@@ -306,7 +334,7 @@ function AccountingTable() {
 
     setTimeout(() => {
       const weeksInMonth = getWeekRangesInMonth(day.year, day.month - 1);
-      console.log(weeksInMonth[0]);
+      console.log(weeksInMonth);
       let b_new = false;
       let numItems = weeksInMonth.length;
       for (let i = 0; i < numItems; i++) {
@@ -328,6 +356,8 @@ function AccountingTable() {
               day: datesOfWeek[j].date,
               totalInput: datesOfWeek[j].totalInput,
               totalOutput: datesOfWeek[j].totalOutput,
+              inputOfWeek: weeksInMonth[i].inputOfWeek,
+              outputOfWeek: weeksInMonth[i].outputOfWeek
             });
           }
         }
@@ -372,27 +402,12 @@ function AccountingTable() {
     const monthNames = LocaleConfig.locales['fr'].monthNamesShort;
     const date = new Date(item.day);
     const month = monthNames[date.getMonth()];
-
-    if (item.viewMode == 'week') {
-      const dateEnd = new Date(item.endOfWeek);
-      const monthEnd = monthNames[dateEnd.getMonth()];
-      return (
-        <View style={styles.itemSide}>
-          <Text style={styles.itemDay}>{date.getDate()}</Text>
-          <Text style={styles.itemMonth}>{month}</Text>
-          <Text>-</Text>
-          <Text style={styles.itemDay}>{dateEnd.getDate()}</Text>
-          <Text style={styles.itemMonth}>{monthEnd}</Text>
-        </View>
-      );
-    } else {
-      return (
-        <View style={styles.itemSide}>
-          <Text style={styles.itemDay}>{date.getDate()}</Text>
-          <Text style={styles.itemMonth}>{month}</Text>
-        </View>
-      );
-    }
+    return (
+      <View style={styles.itemSide}>
+        <Text style={styles.itemDay}>{date.getDate()}</Text>
+        <Text style={styles.itemMonth}>{month}</Text>
+      </View>
+    );
   };
 
   const renderItem = (item, isFirst) => {
@@ -678,9 +693,11 @@ function getWeekRangesInMonth(year, month) {
   );
 
   console.log('getWeekRangesInMonth');
-  console.log(firstDayOfMonth);
-  console.log(lastDayOfMonth);
-  console.log(firstSundayOfMonth);
+  //data from API
+  let allDataFetched = [];
+    //just for test
+  let totalInput = 20;
+  let totalOutput = 10;
 
   const weeks = [];
   let currentDay = new Date(firstSundayOfMonth);
@@ -694,8 +711,6 @@ function getWeekRangesInMonth(year, month) {
     let outputOfWeek = 0;
     for (let i = 0; i <= 6; i++) {
       const date = new Date(startOfWeek.getTime() + i * 24 * 60 * 60 * 1000);
-      let totalInput = 23;
-      let totalOutput = 2;
       datesOfWeek.push({ date, totalInput, totalOutput });
       inputOfWeek += totalInput;
       outputOfWeek += totalOutput;
@@ -710,6 +725,10 @@ function getWeekRangesInMonth(year, month) {
     });
 
     currentDay.setDate(currentDay.getDate() + 7);
+
+    //just for test
+    totalInput += 5;
+    totalOutput += 5;
   }
 
   return weeks;
