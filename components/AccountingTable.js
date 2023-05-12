@@ -6,6 +6,9 @@ import {
   Agenda,
   AgendaHeaderView,
 } from 'react-native-calendars';
+// import CalendarStrip from 'react-native-slideable-calendar-strip';
+import { DatePicker } from 'react-native-week-month-date-picker';
+import { addDays } from 'date-fns';
 import { Table, Row, Rows } from 'react-native-table-component';
 // import useLogic from '../useLogic';
 // import { COLOR } from '../../../../utils/style';
@@ -244,32 +247,51 @@ function AccountingTable() {
   // }, [selectedDate, viewMode]);
 
   const MyCalendar = ({ onDayPress }) => {
+    const minDate = new Date();
     return (
-      <Agenda
-        // testID={testIDs.agenda.CONTAINER}
-        // items={itemState}
-        items={{
-          '2023-04-30': [{totalInput: 'item 1 - any js object',day:'2023-04-30'}],
-          '2023-05-04': [{totalInput: 'item 2 - any js object', height: 80,day:'2023-05-04'}],
-          '2023-05-05': [{totalInput: 'item 2 - any js object', height: 80,day:'2023-05-04'}],
-          '2023-05-07': [{totalInput: 'item 2 - any js object', height: 80,day:'2023-05-07'}],
-          '2023-05-14': [{totalInput: 'item 3 - any js object any js object',day:'2023-05-14'}],
-          '2023-05-21': [{totalInput: 'item 3 - any js object any js object',day:'2023-05-21'}],
-          '2023-05-28': [{totalInput: 'item 3 - any js object any js object',day:'2023-05-28'}],
+      // <Agenda
+      //   // testID={testIDs.agenda.CONTAINER}
+      //   // items={itemState}
+      //   items={{
+      //     '2023-04-30': [{totalInput: 'item 1 - any js object',day:'2023-04-30'}],
+      //     '2023-05-04': [{totalInput: 'item 2 - any js object', height: 80,day:'2023-05-04'}],
+      //     '2023-05-05': [{totalInput: 'item 2 - any js object', height: 80,day:'2023-05-04'}],
+      //     '2023-05-07': [{totalInput: 'item 2 - any js object', height: 80,day:'2023-05-07'}],
+      //     '2023-05-14': [{totalInput: 'item 3 - any js object any js object',day:'2023-05-14'}],
+      //     '2023-05-21': [{totalInput: 'item 3 - any js object any js object',day:'2023-05-21'}],
+      //     '2023-05-28': [{totalInput: 'item 3 - any js object any js object',day:'2023-05-28'}],
+      //   }}
+      //   // loadItemsForMonth={loadItemsForMonth}
+      //   onDayPress={onDayPressed}
+      //   // selected={selectedDate}
+      //   selected={'2023-04-30'}
+      //   maxDate={currentDate.toISOString().slice(0, 10)}
+      //   // renderItem={renderItem}
+      //   renderEmptyDate={renderEmptyDate}
+      //   onDayChange={onDayChange}
+      //   onScroll={handleScroll}
+      //   // renderDay={renderDay}
+      //   rowHasChanged={rowHasChanged}
+      //   showClosingKnob={true}
+      // />
+      <DatePicker
+        minDate={minDate}
+        maxDate={addDays(minDate, 120)}
+        markedDates={[minDate, addDays(new Date(), 2)]}
+        selectedDate={selectedDate}
+        onDateChange={(date) => setSelectedDate(date)}
+        disabledDates={[addDays(new Date(), 1), addDays(new Date(), 3)]}
+        allowsPastDates={false}
+        locale="en"
+        theme={{
+          primaryColor: 'purple',
         }}
-        // loadItemsForMonth={loadItemsForMonth}
-        onDayPress={onDayPressed}
-        // selected={selectedDate}
-        selected={'2023-04-30'}
-        maxDate={currentDate.toISOString().slice(0, 10)}
-        // renderItem={renderItem}
-        renderEmptyDate={renderEmptyDate}
-        onDayChange={onDayChange}
-        onScroll={handleScroll}
-        // renderDay={renderDay}
-        rowHasChanged={rowHasChanged}
-        showClosingKnob={true}
-      />
+      >
+        <View>
+          <Text>Timeslots</Text>
+          <Text>{selectedDate.toString()}</Text>
+        </View>
+      </DatePicker>
     );
   };
 
