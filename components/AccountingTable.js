@@ -5,11 +5,13 @@ import {
   LocaleConfig,
   Agenda,
   AgendaHeaderView,
+  WeekCalendar,
 } from 'react-native-calendars';
 // import CalendarStrip from 'react-native-slideable-calendar-strip';
-import { DatePicker } from 'react-native-week-month-date-picker';
-import { addDays } from 'date-fns';
+// import { DatePicker } from 'react-native-week-month-date-picker';
+import { addDays, eachDayOfInterval, subDays } from 'date-fns';
 import { Table, Row, Rows } from 'react-native-table-component';
+import PagerView from 'react-native-pager-view';
 // import useLogic from '../useLogic';
 // import { COLOR } from '../../../../utils/style';
 
@@ -64,6 +66,27 @@ LocaleConfig.locales['fr'] = {
   dayNamesShort: ['Dim.', 'Lun.', 'Mar.', 'Mer.', 'Jeu.', 'Ven.', 'Sam.'],
 };
 LocaleConfig.defaultLocale = 'fr';
+
+const dates = eachDayOfInterval(
+  {
+    start: subDays(new Date(), 14),
+    end: addDays(new Date(), 14),
+  },
+  {
+    weekStartsON: 1
+  }
+).reduce((acc: Date[][], cur) => {
+  const allDays = eachDayOfInterval({
+    start: cur,
+    end: addDays(cur,6)
+  });
+
+  acc.push(allDays);
+
+  return acc;
+}, []);
+
+console.log(dates);
 
 function AccountingTable() {
   // const { loading } = useLogic();
@@ -249,6 +272,11 @@ function AccountingTable() {
   const MyCalendar = ({ onDayPress }) => {
     const minDate = new Date();
     return (
+      <>
+        <Text>AAAA</Text>
+        
+      </>
+      
       // <Agenda
       //   // testID={testIDs.agenda.CONTAINER}
       //   // items={itemState}
@@ -274,24 +302,6 @@ function AccountingTable() {
       //   rowHasChanged={rowHasChanged}
       //   showClosingKnob={true}
       // />
-      <DatePicker
-        minDate={minDate}
-        maxDate={addDays(minDate, 120)}
-        markedDates={[minDate, addDays(new Date(), 2)]}
-        selectedDate={selectedDate}
-        onDateChange={(date) => setSelectedDate(date)}
-        disabledDates={[addDays(new Date(), 1), addDays(new Date(), 3)]}
-        allowsPastDates={false}
-        locale="en"
-        theme={{
-          primaryColor: 'purple',
-        }}
-      >
-        <View>
-          <Text>Timeslots</Text>
-          <Text>{selectedDate.toString()}</Text>
-        </View>
-      </DatePicker>
     );
   };
 
@@ -704,6 +714,9 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     backgroundColor: '#f2f2f2',
   },
+  rowWeek: {
+    flexDirection:'row'
+  }
 });
 
 function getWeekRangesInMonth(year, month) {
@@ -717,7 +730,7 @@ function getWeekRangesInMonth(year, month) {
   console.log('getWeekRangesInMonth');
   //data from API
   let allDataFetched = [];
-    //just for test
+  //just for test
   let totalInput = 20;
   let totalOutput = 10;
 
