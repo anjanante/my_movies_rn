@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, FlatList } from 'react-native';
 import {
   Calendar,
   LocaleConfig,
@@ -9,9 +9,9 @@ import {
 } from 'react-native-calendars';
 // import CalendarStrip from 'react-native-slideable-calendar-strip';
 // import { DatePicker } from 'react-native-week-month-date-picker';
-import { addDays, eachDayOfInterval, subDays } from 'date-fns';
+import { addDays, eachDayOfInterval, eachWeekOfInterval, format, subDays } from 'date-fns';
 import { Table, Row, Rows } from 'react-native-table-component';
-import PagerView from 'react-native-pager-view';
+// import PagerView from 'react-native-pager-view';
 // import useLogic from '../useLogic';
 // import { COLOR } from '../../../../utils/style';
 
@@ -67,18 +67,18 @@ LocaleConfig.locales['fr'] = {
 };
 LocaleConfig.defaultLocale = 'fr';
 
-const dates = eachDayOfInterval(
+const dates = eachWeekOfInterval(
   {
     start: subDays(new Date(), 14),
     end: addDays(new Date(), 14),
   },
   {
-    weekStartsON: 1
+    weekStartsOn: 0
   }
-).reduce((acc: Date[][], cur) => {
+).reduce((acc, cur) => {
   const allDays = eachDayOfInterval({
     start: cur,
-    end: addDays(cur,6)
+    end: addDays(cur, 6)
   });
 
   acc.push(allDays);
@@ -273,10 +273,51 @@ function AccountingTable() {
     const minDate = new Date();
     return (
       <>
-        <Text>AAAA</Text>
-        
+        <Text>WEEK</Text>
+        {/* <PagerView style={styles.container}> */}
+        {/* { dates.map((week,i)=> {
+            return <View key={i}>
+              <View style={styles.rowWeek}>
+                { week.map(day => {
+                  const txt = format(day, 'EEEEE');
+
+                  return (
+                    <View style={styles.day}>
+                      <Text>{txt}</Text>
+                      <Text>{day.getDate()}</Text>
+                    </View>
+                  )
+                })}
+              </View>
+            </View>
+          })} */}
+        <View style={{ height: 35 }}>
+          <FlatList
+            data={dates}
+            renderItem={({ item }) => {
+              console.log('-----week-------');
+              console.log(item);
+              return (
+                <View style={styles.rowWeek}>
+                  {item.map(day => {
+                    const txt = format(day, 'EEEEE');
+                    return (
+                      <View style={styles.day}>
+                        <Text>{txt}</Text>
+                        <Text>{day.getDate()}</Text>
+                      </View>
+                    )
+                  })}
+                </View>
+              )
+            }}
+            keyExtractor={item => item.index}
+
+          />
+        </View>
+        {/* </PagerView> */}
       </>
-      
+
       // <Agenda
       //   // testID={testIDs.agenda.CONTAINER}
       //   // items={itemState}
@@ -715,8 +756,12 @@ const styles = StyleSheet.create({
     backgroundColor: '#f2f2f2',
   },
   rowWeek: {
-    flexDirection:'row'
-  }
+    flexDirection: 'row',
+    justifyContent: 'space-around'
+  },
+  day: {
+    alignItems: 'center',
+  },
 });
 
 function getWeekRangesInMonth(year, month) {
